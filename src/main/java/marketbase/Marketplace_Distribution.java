@@ -1,123 +1,133 @@
 package marketbase;
 
-import interfaces.MarketEntityInterface;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.Point;
-
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
-
-//Class to handle the distribution configuration
-public class Marketplace_Distribution extends JPanel implements MarketEntityInterface{
-
-	private JTextField[] fields;
-	//Parameters for user to set 
-	private JLabel[] labels = { new JLabel("Mean: "),
-								new JLabel("Variance: "),
-								new JLabel("Distribution: "),
-								new JLabel("Distribution Mean: "),
-								new JLabel("Distribution Deviation: ")};
-	//Textbox width
-	private int[] widths = { 20, 20, 20, 20, 20};
+public class Marketplace_Distribution extends JPanel implements FocusListener {
+	SpringLayout	layout		= new SpringLayout();
+	String[]		labels		= { "Maximum Time Step:", "Warm Up Period:" };
 	
-	//For .ini file comparison
-	private String[] fieldName = { "mean",
-								   "variance",
-								   "distribution",
-								   "distributionMean",
-								   "distributionDeviation"};
+	final String[] DEFAULT =
+						{"<For Example: 100>",
+						 "<For Example: 5>"
+						};
 	
-	//Constructor
-	Marketplace_Distribution() {
-		this.setBorder(BorderFactory.createTitledBorder("Distribution"));
-		initLabelsandTextFields();
+	JLabel[]		label		= new JLabel[2];
+	JTextField[]	textfield	= new JTextField[2];
+
+	public Marketplace_Distribution() {
+		this.setLayout(layout);
+
+		for (int i = 0; i < label.length; i++) {
+			label[i] = new JLabel(labels[i]);
+			textfield[i] = new JTextField(20);
+			this.add(label[i]);
+			this.add(textfield[i]);
+			textfield[i].addFocusListener(this);
+		}
+		setTextField();
+
+		layout.putConstraint(SpringLayout.WEST, label[0], 5, SpringLayout.WEST, this);
+		layout.putConstraint(SpringLayout.NORTH, label[0], 5, SpringLayout.NORTH, this);
+
+		layout.putConstraint(SpringLayout.WEST, textfield[0], 95, SpringLayout.EAST, label[0]);
+		layout.putConstraint(SpringLayout.NORTH, textfield[0], 5, SpringLayout.NORTH, this);
+		layout.putConstraint(SpringLayout.EAST, this, 10, SpringLayout.EAST, textfield[0]);
+
+		for (int i = 1; i < label.length; i++) {
+			layout.putConstraint(SpringLayout.WEST, label[i], 5, SpringLayout.WEST, this);
+			layout.putConstraint(SpringLayout.NORTH, label[i], 5, SpringLayout.SOUTH,
+					textfield[i - 1]);
+
+			layout.putConstraint(SpringLayout.WEST, textfield[i], 0, SpringLayout.WEST,
+					textfield[i - 1]);
+			layout.putConstraint(SpringLayout.NORTH, textfield[i], 5, SpringLayout.SOUTH,
+					textfield[i - 1]);
+			layout.putConstraint(SpringLayout.EAST, textfield[i], 0, SpringLayout.EAST,
+					textfield[0]);
+		}
+		layout.putConstraint(SpringLayout.SOUTH, this, 10, SpringLayout.SOUTH, textfield[textfield.length - 1]);
+		this.setVisible(true);
+	}
+
+	public void configuration() {
+		try {
+			File file = new File("SchedulerConfiguration.ini");
+			int i = 0;
+			while (file.exists()) {
+				file = new File("SchedulerConfiguration" + i + ".ini");
+				i++;
+			}
+
+			PrintWriter output = new PrintWriter(file);
+			output.print("maxTimeStep=");
+			output.println(this.textfield[0].getText());
+			output.print("warmupPeriod=");
+			output.println(this.textfield[1].getText());
+			output.close();
+		} catch (Exception ex) {
+			System.out.println("IO Exception occured");
+		}
+		for (int i = 0; i < textfield.length; i++) {
+			this.textfield[i].setText("");
+		}
 	}
 	
-	 public void initLabelsandTextFields()
-	 {
-		 JPanel labelPanel = new JPanel();
-		 JPanel textPanel = new JPanel();
-		 BoxLayout labLayout = new BoxLayout(labelPanel, BoxLayout.Y_AXIS);
-		 labelPanel.setLayout(labLayout);
-		 BoxLayout textLayout = new BoxLayout(textPanel, BoxLayout.Y_AXIS);
-		 textPanel.setLayout(textLayout);
-		 fields = new JTextField[labels.length];
-		 for(int i=0; i<labels.length; i++)
-		 {
-			 fields[i] = new JTextField(widths[i]);
-			 fields[i].setName(fieldName[i]);
-			 if(fields[i].getName().equalsIgnoreCase("mean"))
-			 {
-				 fields[i].setToolTipText("This field indicates. " +
-				 		"Please key in value from X to X"); //Need to find out the parameters meaning and range of values
-			 }
-			 if(fields[i].getName().equalsIgnoreCase("variance"))
-			 {
-				 fields[i].setToolTipText("This field indicates." +
-				 		"Please key in value from X to X"); //Need to find out the parameters meaning and range of values
-			 }
-			 if(fields[i].getName().equalsIgnoreCase("distribution"))
-			 {
-				 fields[i].setToolTipText("This field indicates. " +
-				 		"Please key in value from X to X"); //Need to find out the parameters meaning and range of values
-			 }
-			 if(fields[i].getName().equalsIgnoreCase("distributionMean"))
-			 {
-				 fields[i].setToolTipText("This field indicates. " +
-				 		"Please key in value from X to X"); //Need to find out the parameters meaning and range of values
-			 }
-			 if(fields[i].getName().equalsIgnoreCase("distributionDeviation"))
-			 {
-				 fields[i].setToolTipText("This field indicates. " +
-				 		"Please key in value from X to X"); //Need to find out the parameters meaning and range of values
-			 }
-			 labels[i].setLabelFor(fields[i]);
-			 labels[i].setAlignmentX(Component.LEFT_ALIGNMENT);
-			 fields[i].setAlignmentX(Component.LEFT_ALIGNMENT);
-		     labelPanel.add(labels[i]);
-			 textPanel.add(fields[i]);
-		 }
-		 labelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		 textPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		 add(labelPanel);
-		 add(textPanel);
-	 }
-	 
-	 public void resetText()
-	 {
-		 for(int i = 0;i < this.getComponentCount();i++)
-			 if(this.getComponent(i) instanceof JPanel)
-				 setResetTextField(((JPanel)this.getComponent(i)));
-	 }
-	
-	public void setResetTextField(JPanel tempPanel)
+	public void importConfig(String filename)
 	{
-		 for(int c = 0;c < tempPanel.getComponentCount();c++)
-			 if(tempPanel.getComponent(c) instanceof JTextField)
-				 ((JTextField)tempPanel.getComponent(c)).setText("");
-	}	
-
-	public void setParameters(int i,String text)
-	{
-		if(i < 0 || i >= fields.length)
-			return;
+		File file = new File(filename);
+		String[] key = null;
+		int i = 0;
 		
-		fields[i].setText(text);
+		try
+		{
+			Scanner reader = new Scanner(file);
+			
+			while (reader.hasNext())
+			{
+				String data = reader.nextLine();
+				key = data.split("=", 0);
+				textfield[i].setForeground(Color.black);
+				textfield[i].setText(key[1]);
+				i++;
+			}
+			
+			reader.close();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+		}
+		
 	}
 
-	public void setCompSize(int x, int y, int width, int height) {
-		this.setBounds(x, y, width, height);
-		((FlowLayout)this.getLayout()).setHgap(width/3 - getComponent(0).getWidth());
+	public void focusGained(FocusEvent e) {
+		for (int i = 0; i < textfield.length; i++) {
+			if (e.getSource() == textfield[i]) {
+				textfield[i].setForeground(Color.black);
+				if (textfield[i].getText().equalsIgnoreCase(DEFAULT[i]))
+				{
+					textfield[i].setText("");
+				}
+			}
+		}
+	}
+
+	public void focusLost(FocusEvent e) {}
+	
+	public void setTextField()
+	{
+		Color color = Color.gray;
+		for (int i = 0; i < textfield.length; i++)
+		{
+			textfield[i].setForeground(color);
+			textfield[i].setText(DEFAULT[i]);
+			textfield[i].setToolTipText(DEFAULT[i]);
+		}
 	}
 }
