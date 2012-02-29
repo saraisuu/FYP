@@ -78,18 +78,13 @@ public class Marketplace_Master extends JPanel implements FocusListener{
         this.setVisible(false);
     }
     
-    public void configuration()
+    public String configuration(String[] filename) 
     {
+		String fileS = "SavedConfiguration\\" + filename[1];
+		boolean success = new File(fileS).mkdirs();
         try
         {
-            File file = new File("AgentMasterConfiguration.ini");
-            int i = 0;
-            while(file.exists())
-            {
-                file = new File("AgentMasterConfiguration" + i + ".ini");
-                i++;
-            }
-            
+            File file = new File(fileS + "\\AgentMasterConfiguration.ini");
             PrintWriter output = new PrintWriter(file);
             output.print("agentNum=");
             output.println(this.textfield[0].getText());
@@ -124,15 +119,14 @@ public class Marketplace_Master extends JPanel implements FocusListener{
             output.print("wishlist=");
             output.println(this.textfield[4].getText());
             output.close();
+            fileS = file.getAbsolutePath();
         }
         catch (Exception ex)
         {
             System.out.println("IO Exception occured");    
         }
-        for (int i = 0; i < textfield.length; i++)
-        {
-            this.textfield[i].setText("");
-        }
+        this.setTextField();
+        return fileS;
     }
     
     

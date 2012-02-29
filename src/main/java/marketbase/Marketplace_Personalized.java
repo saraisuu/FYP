@@ -11,6 +11,12 @@ public class Marketplace_Personalized extends JPanel implements FocusListener{
 	SpringLayout	layout		= new SpringLayout();
 	String[]		labels		= { "Epsilon:", "Gamma:", "Forgetting:", "Time Window:" };
 	JLabel[]		label		= new JLabel[4];
+	final String[] DEFAULT = {
+			"<For Example: 0.4>",
+			"<For Example: 0.5>",
+			"<For Example: 0.5>",
+			"<For Example: 5>"
+			};
 	JTextField[]	textfield	= new JTextField[4];
 	JButton			next_config;
 
@@ -24,11 +30,8 @@ public class Marketplace_Personalized extends JPanel implements FocusListener{
 			this.add(textfield[i]);
 			textfield[i].addFocusListener(this);
 		}
-
-		textfield[0].setText("<For Example: 0.4>");
-		textfield[1].setText("<For Example: 0.5>");
-		textfield[2].setText("<For Example: 0.5>");
-		textfield[3].setText("<For Example: 5>");
+		
+		this.setTextField();
 
 		layout.putConstraint(SpringLayout.WEST, label[0], 5, SpringLayout.WEST, this);
 		layout.putConstraint(SpringLayout.NORTH, label[0], 5, SpringLayout.NORTH, this);
@@ -55,15 +58,12 @@ public class Marketplace_Personalized extends JPanel implements FocusListener{
 		this.setVisible(false);
 	}
 
-	public void configuration() {
+	public String configuration(String[] filename) 
+	{
+		String fileS = "SavedConfiguration\\" + filename[1];
+		boolean success = new File(fileS).mkdirs();
 		try {
-			File file = new File("PersonalizedTrustModelConfiguration.ini");
-			int i = 0;
-			while (file.exists()) {
-				file = new File("PersonalizedTrustModelConfiguration" + i + ".ini");
-				i++;
-			}
-
+			File file = new File(fileS + "\\PersonalizedTrustModelConfiguration.ini");
 			PrintWriter output = new PrintWriter(file);
 			output.print("epsilon=");
 			output.println(this.textfield[0].getText());
@@ -74,12 +74,12 @@ public class Marketplace_Personalized extends JPanel implements FocusListener{
 			output.print("timeWindow=");
 			output.println(this.textfield[3].getText());
 			output.close();
+			fileS = file.getAbsolutePath();
 		} catch (Exception ex) {
 			System.out.println("IO Exception occured");
 		}
-		for (int i = 0; i < textfield.length; i++) {
-			this.textfield[i].setText("");
-		}
+		this.setTextField();
+		return fileS;
 	}
 
 	public void focusGained(FocusEvent e) {
@@ -92,5 +92,16 @@ public class Marketplace_Personalized extends JPanel implements FocusListener{
 
 	public void focusLost(FocusEvent e) {
 
+	}
+	
+	public void setTextField()
+	{
+		Color color = Color.gray;
+		for (int i = 0; i < textfield.length; i++)
+		{
+			textfield[i].setForeground(color);
+			textfield[i].setText(DEFAULT[i]);
+			textfield[i].setToolTipText(DEFAULT[i]);
+		}	
 	}
 }

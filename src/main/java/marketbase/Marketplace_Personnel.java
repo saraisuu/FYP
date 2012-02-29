@@ -57,15 +57,11 @@ public class Marketplace_Personnel extends JPanel implements FocusListener {
 		this.setVisible(true);
 	}
 
-	public void configuration() {
+	public String configuration(String[] filename) {
+		String fileS = "SavedConfiguration\\" + filename[1];
+		Boolean success = new File(fileS).mkdirs();
 		try {
-			File file = new File("AgentConfiguration.ini");
-			int i = 0;
-			while (file.exists()) {
-				file = new File("AgentConfiguration" + i + ".ini");
-				i++;
-			}
-
+			File file = new File(fileS + "\\AgentConfiguration.ini");
 			PrintWriter output = new PrintWriter(file);
 			output.print("buyerNum=");
 			output.println(this.textfield[0].getText());
@@ -74,12 +70,12 @@ public class Marketplace_Personnel extends JPanel implements FocusListener {
 			output.print("initialBalance=");
 			output.println(this.textfield[2].getText());
 			output.close();
+			fileS = file.getAbsolutePath();
 		} catch (Exception ex) {
 			System.out.println("IO Exception occured");
 		}
-		for (int i = 0; i < textfield.length; i++) {
-			this.textfield[i].setText("");
-		}
+		this.setTextField();
+		return fileS;
 	}
 	
 	public void importConfig(String filename)

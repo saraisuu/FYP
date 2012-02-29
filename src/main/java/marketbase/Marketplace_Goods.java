@@ -85,15 +85,11 @@ public class Marketplace_Goods extends JPanel implements FocusListener, ActionLi
 		this.setVisible(true);
 	}
 
-	public void configuration() {
+	public String configuration(String[] filename) {
+		String fileS = "SavedConfiguration\\" + filename[1];
+		boolean success = new File(fileS).mkdirs();
 		try {
-			File file = new File("ProductConfiguration.ini");
-			int i = 0;
-			while (file.exists()) {
-				file = new File("ProductConfiguration" + i + ".ini");
-				i++;
-			}
-
+			File file = new File(fileS + "\\ProductConfiguration.ini");
 			PrintWriter output = new PrintWriter(file);
 			output.print("numTypes=");
 			output.println(this.textfield[0].getText());
@@ -114,12 +110,12 @@ public class Marketplace_Goods extends JPanel implements FocusListener, ActionLi
 			output.print("distributionConfigFile=");
 			output.println(this.textfield[8].getText());
 			output.close();
+			fileS = file.getAbsolutePath();
 		} catch (Exception ex) {
 			System.out.println("IO Exception occured");
 		}
-		for (int i = 0; i < textfield.length; i++) {
-			this.textfield[i].setText("");
-		}
+		this.setTextField();
+		return fileS;
 	}
 	
 	public void importConfig(String filename)

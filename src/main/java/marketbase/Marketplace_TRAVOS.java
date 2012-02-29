@@ -59,9 +59,12 @@ public class Marketplace_TRAVOS extends JPanel implements FocusListener {
 		this.setVisible(false);
 	}
 
-	public void configuration() {
+	public String configuration(String[] filename) 
+	{
+		String fileS = "SavedConfiguration\\" + filename[1];
+		boolean success = new File(fileS).mkdirs();
 		try {
-			File file = new File("TRAVOSTrustModelConfiguration.ini");
+			File file = new File(fileS + "\\TRAVOSTrustModelConfiguration.ini");
 			int i = 0;
 			while (file.exists()) {
 				file = new File("TRAVOSTrustModelConfiguration" + i + ".ini");
@@ -76,12 +79,12 @@ public class Marketplace_TRAVOS extends JPanel implements FocusListener {
 			output.print("minAccuracyValue=");
 			output.println(this.textfield[2].getText());
 			output.close();
+			fileS = file.getAbsolutePath();
 		} catch (Exception ex) {
 			System.out.println("IO Exception occured");
 		}
-		for (int i = 0; i < textfield.length; i++) {
-			this.textfield[i].setText("");
-		}
+		this.setTextField();
+		return fileS;
 	}
 
 	public void focusGained(FocusEvent e) {

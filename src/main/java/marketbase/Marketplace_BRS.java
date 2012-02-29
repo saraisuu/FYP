@@ -41,28 +41,25 @@ public class Marketplace_BRS extends JPanel implements FocusListener
         this.setVisible(false);
     }
     
-    public void configuration()
+    public String configuration(String[] filename) 
     {
+		String fileS = "SavedConfiguration\\" + filename[1];
+		boolean success = new File(fileS).mkdirs();
         try
         {
-            File file = new File("BRSTrustModelConfiguration.ini");
-            int i = 0;
-            while(file.exists())
-            {
-                file = new File("BRSTrustModelConfiguration" + i + ".ini");
-                i++;
-            }
-            
+            File file = new File(fileS + "\\BRSTrustModelConfiguration.ini");
             PrintWriter output = new PrintWriter(file);
             output.print("quantile=");
             output.println(this.textfield.getText());
             output.close();
+            fileS = file.getCanonicalPath();
         }
         catch (Exception ex)
         {
             System.out.println("IO Exception occured");    
         }
-        this.textfield.setText("");
+        this.setTextField();
+        return fileS;
     }
     
     public void focusGained(FocusEvent e) {

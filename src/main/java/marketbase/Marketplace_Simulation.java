@@ -22,7 +22,7 @@ public class Marketplace_Simulation extends JPanel implements FocusListener, Act
 	JTextField[] textfield = new JTextField[2];
 	Marketplace_Personnel agentConfig;
 	Marketplace_Goods productConfig;
-	Marketplace_Distribution schedConfig;
+	Marketplace_Schedule schedConfig;
 	Marketplace_Master masterConfig;
 	Marketplace_BRS brsConfig;
 	Marketplace_TRAVOS travosConfig;
@@ -56,7 +56,7 @@ public class Marketplace_Simulation extends JPanel implements FocusListener, Act
 				"Product Configuration");
 		productConfig.setBorder(productTitle);
 
-		schedConfig = new Marketplace_Distribution();
+		schedConfig = new Marketplace_Schedule();
 		TitledBorder schedTitle = BorderFactory.createTitledBorder(blackline,
 				"Scheduler Configuration");
 		schedConfig.setBorder(schedTitle);
@@ -203,6 +203,39 @@ public class Marketplace_Simulation extends JPanel implements FocusListener, Act
 			textfield[i].setText(DEFAULT[i]);
 			textfield[i].setToolTipText(DEFAULT[i]);
 		}	
+	}
+	
+	public String[] configuration(String[] filename)
+	{
+		String fileS = "SavedConfiguration\\" + filename[1];
+		String[] key = new String[5];
+		boolean success = new File(fileS).mkdirs();
+		try {
+			File file = new File(fileS + "\\SimulationConfiguration.ini");
+			PrintWriter output = new PrintWriter(file);
+			output.print("creditPerTurn=");
+			output.println(this.textfield[0].getText());
+			output.print("agentConfigClass=");
+			output.println(this.textfield[1].getText());
+			output.print("agentConfigFile=");
+			key[0] = agentConfig.configuration(filename);
+			output.println(key);
+			output.print("productConfigFile=");
+			key[1] = productConfig.configuration(filename);
+			output.println(key);
+			output.print("agentMasterConfigFile=");
+			key[2] = masterConfig.configuration(filename);
+			output.println(key);
+			output.print("schedulerConfigFile=");
+			key[3] = schedConfig.configuration(filename);
+			output.println(key);
+			output.close();
+			key[4] = file.getAbsolutePath();
+		} catch (Exception ex) {
+			System.out.println("IO Exception occured");
+		}
+		this.setTextField();
+		return key;	
 	}
 }
 

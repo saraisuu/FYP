@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-public class Marketplace_Distribution extends JPanel implements FocusListener {
+public class Marketplace_Schedule extends JPanel implements FocusListener {
 	SpringLayout	layout		= new SpringLayout();
 	String[]		labels		= { "Maximum Time Step:", "Warm Up Period:" };
 	
@@ -20,7 +20,7 @@ public class Marketplace_Distribution extends JPanel implements FocusListener {
 	JLabel[]		label		= new JLabel[2];
 	JTextField[]	textfield	= new JTextField[2];
 
-	public Marketplace_Distribution() {
+	public Marketplace_Schedule() {
 		this.setLayout(layout);
 
 		for (int i = 0; i < label.length; i++) {
@@ -55,27 +55,23 @@ public class Marketplace_Distribution extends JPanel implements FocusListener {
 		this.setVisible(true);
 	}
 
-	public void configuration() {
+	public String configuration(String[] filename) {
+		String fileS = "SavedConfiguration\\" + filename[1];
+		boolean success = new File(fileS).mkdirs();
 		try {
-			File file = new File("SchedulerConfiguration.ini");
-			int i = 0;
-			while (file.exists()) {
-				file = new File("SchedulerConfiguration" + i + ".ini");
-				i++;
-			}
-
+			File file = new File(fileS + "\\SchedulerConfiguration.ini");
 			PrintWriter output = new PrintWriter(file);
 			output.print("maxTimeStep=");
 			output.println(this.textfield[0].getText());
 			output.print("warmupPeriod=");
 			output.println(this.textfield[1].getText());
 			output.close();
+			fileS = file.getAbsolutePath();
 		} catch (Exception ex) {
 			System.out.println("IO Exception occured");
 		}
-		for (int i = 0; i < textfield.length; i++) {
-			this.textfield[i].setText("");
-		}
+		this.setTextField();
+		return fileS;
 	}
 	
 	public void importConfig(String filename)
